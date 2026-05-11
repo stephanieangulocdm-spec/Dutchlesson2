@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vul-in oefeningen — Boekteksten Les 1-7</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+    padding: 24px 14px 60px;
+    min-height: 100vh;
+    line-height: 1.75;
+  }
+  .container { max-width: 820px; margin: 0 auto; }
+  h1 { color: #1a7a3e; font-size: 24px; margin-bottom: 4px; }
+  .subtitle { color: #666; margin-bottom: 18px; font-size: 14px; }
+
+  .header-bar {
+    background: #fff;
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .topic-badge {
+    background: #e8f3ec;
+    color: #1a7a3e;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .stats { font-size: 13px; color: #666; }
+
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    background: #1a7a3e;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn:hover:not(:disabled) { background: #15642f; }
+  .btn:active:not(:disabled) { transform: scale(0.97); }
+  .btn:disabled { background: #bbb; cursor: not-allowed; }
+  .btn.secondary {
+    background: #fff;
+    color: #1a7a3e;
+    border: 2px solid #1a7a3e;
+  }
+  .btn.secondary:hover:not(:disabled) { background: #f0f8f3; }
+
+  .topic-picker {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .topic-picker label { font-size: 13px; color: #555; }
+  .topic-picker select {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    background: #fff;
+    flex: 1;
+    min-width: 220px;
+  }
+  .difficulty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+  }
+  .difficulty label { font-size: 13px; }
+  .difficulty input { width: 110px; }
+
+  .text-block {
+    background: #fff;
+    padding: 22px 26px;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    font-size: 16px;
+  }
+
+  .gap-input {
+    display: inline-block;
+    border: none;
+    border-bottom: 2px solid #aaa;
+    background: #f3f3f3;
+    padding: 1px 7px;
+    font-size: 15px;
+    font-family: inherit;
+    border-radius: 3px 3px 0 0;
+    text-align: left;
+    vertical-align: baseline;
+    margin: 0 1px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .gap-input:focus {
+    outline: none;
+    border-bottom-color: #1a7a3e;
+    background: #fff;
+  }
+  .gap-input.correct {
+    background: #e8f7ec;
+    border-bottom-color: #1a7a3e;
+    color: #1a7a3e;
+    font-weight: 600;
+  }
+  .gap-input.incorrect {
+    background: #fdeaea;
+    border-bottom-color: #d63638;
+    color: #d63638;
+    font-weight: 600;
+    text-decoration: line-through;
+  }
+  .gap-correction {
+    display: inline-block;
+    color: #1a7a3e;
+    font-weight: 600;
+    background: #e8f7ec;
+    padding: 0px 7px;
+    border-radius: 3px;
+    margin-left: 3px;
+    font-size: 14px;
+  }
+
+  .result-bar {
+    background: #fff;
+    padding: 16px;
+    border-radius: 10px;
+    margin-top: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    display: none;
+    text-align: center;
+  }
+  .result-bar.show { display: block; }
+  .result-bar h3 { color: #1a7a3e; margin-bottom: 6px; font-size: 20px; }
+  .result-bar .score {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a7a3e;
+    margin: 8px 0;
+  }
+  .result-bar .score.bad { color: #d63638; }
+  .result-bar .score.medium { color: #e07b00; }
+  .result-bar .pct { font-size: 16px; color: #666; margin-bottom: 10px; }
+
+  @media (max-width: 600px) {
+    .gap-input { font-size: 14px; }
+    .text-block { font-size: 14.5px; padding: 16px; line-height: 1.85; }
+    h1 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Vul-in: Boekteksten Les 1-7</h1>
+    <p class="subtitle">De originele teksten uit het boek, maar met willekeurige gaten. Elke keer als je op "Nieuwe oefening" klikt, krijg je andere gaten.</p>
+
+    <div class="header-bar">
+      <div>
+        <div class="topic-badge" id="topicBadge">Laden...</div>
+        <div class="stats" id="stats" style="margin-top:4px;">Vul alle gaten in</div>
+      </div>
+      <div class="controls">
+        <button class="btn secondary" id="checkBtn">Controleer</button>
+        <button class="btn" id="newBtn">Nieuwe oefening</button>
+      </div>
+    </div>
+
+    <div class="topic-picker">
+      <select id="topicSelect">
+        <option value="random">🎲 Willekeurige les</option>
+      </select>
+      <div class="difficulty">
+        <label for="difficulty">Aantal gaten:</label>
+        <input type="range" id="difficulty" min="10" max="40" value="20" />
+        <span id="difficultyValue">20</span>
+      </div>
+    </div>
+
+    <div class="text-block" id="textBlock">Laden...</div>
+
+    <div class="result-bar" id="resultBar">
+      <h3 id="resultTitle">Klaar!</h3>
+      <div class="score" id="resultScore">0 / 0</div>
+      <div class="pct" id="resultPct">0%</div>
+      <button class="btn" id="newAfterBtn">Nog een oefening</button>
+    </div>
+  </div>
+
+<script>
+/* ========== TEXTS FROM THE BOOK (exact reproduction) ==========
+   Each line is the textbook dialogue, marked with speaker prefix.
+   Words wrapped in {} are "blankable" — the engine picks N of them at random.
+   Words NOT in {} are fixed (proper names, numbers, addresses, etc.).
+*/
+
+const texts = [
+  {
+    id: 'les1',
+    topic: 'Les 1 — Hoe heet je?',
+    lines: [
+      { sp: 'A', text: 'Hallo, {ik} {ben} Inge. Mijn naam {is} Inge van Dijk. {Ik} ben de docent. Wie {ben} jij? Hoe {heet} je? Wat is {je} naam?' },
+      { sp: 'B', text: 'Ik {heet} Paula. Mijn naam is Paula.' },
+      { sp: 'A', text: 'Hallo Paula.' },
+      { sp: 'B', text: 'Dag mevrouw.' },
+      { sp: 'A', text: 'Uit {welk} land {kom} je? Wat {zegt} u? Uit welk land kom je? Waar {kom} je vandaan?' },
+      { sp: 'B', text: 'Ik {kom} uit Frankrijk.' },
+      { sp: 'A', text: 'En u meneer? Hoe {heet} u? Wat is {uw} naam?' },
+      { sp: 'C', text: 'Mijn {naam} is Alex Wang.' },
+      { sp: 'A', text: 'Waar {komt} u vandaan? Uit welk land komt u?' },
+      { sp: 'C', text: 'Ik {kom} uit China.' },
+      { sp: 'A', text: 'Waar {woont} u? In welke stad?' },
+      { sp: 'C', text: 'Ik {woon} nu in Den Haag.' },
+      { sp: 'A', text: 'In welke {straat}?' },
+      { sp: 'C', text: 'In de Marktstraat, in het {centrum}. Op nummer 35.' },
+      { sp: 'A', text: 'Wat is uw {telefoonnummer}?' },
+      { sp: 'C', text: 'Mijn telefoonnummer is 06 (nul zes) 12345678.' },
+      { sp: 'A', text: 'Paula, woon jij {ook} in Den Haag?' },
+      { sp: 'B', text: 'Nee, ik {woon} in Rotterdam, dichtbij het centrum.' },
+      { sp: 'N', text: 'De docent {heet} Inge. Van Dijk is {haar} achternaam. Zij {komt} uit Nederland. Meneer Wang komt {niet} uit Nederland. {Hij} komt uit China. Hij {woont} nu in Den Haag. Paula komt uit Frankrijk. Zij woont {nu} in Rotterdam.' },
+    ],
+  },
+
+  {
+    id: 'les2',
+    topic: 'Les 2 — Uit welk land kom je?',
+    lines: [
+      { sp: 'A', text: 'Hallo Amber. Uit welk {land} kom je?' },
+      { sp: 'B', text: 'Ik {kom} uit Engeland. Ik {heb} de Engelse en de Nederlandse nationaliteit.' },
+      { sp: 'A', text: 'Hoe {lang} woon je in Nederland?' },
+      { sp: 'B', text: 'Ik {woon} hier nu zes jaar.' },
+      { sp: 'A', text: 'Wat is je {leeftijd}? Wanneer {ben} je geboren?' },
+      { sp: 'B', text: 'Ik {ben} geboren op drieëntwintig (23) maart 1987.' },
+      { sp: 'A', text: 'Woon je {alleen}, bij vrienden of bij familie?' },
+      { sp: 'B', text: 'Ik {ben} getrouwd met een Nederlander. Zijn naam is Daan Bakker. We {wonen} in Delft.' },
+      { sp: 'A', text: 'Wonen jullie in {het} centrum?' },
+      { sp: 'B', text: 'Nee, we wonen in een {huis} buiten het centrum.' },
+      { sp: 'A', text: 'Hebben jullie {kinderen}?' },
+      { sp: 'B', text: 'Ja, we {hebben} twee kinderen. We hebben een {jongen} van drie jaar en een {meisje} van vijf maanden. Ze {heten} Sam en Iris Bakker.' },
+      { sp: 'N', text: 'Amber komt uit Engeland. Ze {is} getrouwd. Haar {man} heet Daan Bakker. Ze hebben twee kinderen: een {zoon} en een {dochter}. Amber is {hun} moeder en Daan hun {vader}. Paula is {niet} getrouwd. Ze {heeft} geen kinderen.' },
+    ],
+  },
+
+  {
+    id: 'les3',
+    topic: 'Les 3 — Welke dag is het vandaag?',
+    lines: [
+      { sp: 'A', text: 'Welke {dag} is het vandaag?' },
+      { sp: 'B', text: 'Het is {vandaag} dinsdag. Gisteren {was} het maandag. En morgen {is} het woensdag. Na woensdag volgen donderdag en {vrijdag}. De laatste twee dagen van de {week} zijn zaterdag en zondag. Dan {is} het weekend.' },
+      { sp: 'A', text: 'Wanneer {werken} de meeste mensen?' },
+      { sp: 'B', text: 'Van maandag {tot} en met vrijdag. De {meeste} mensen zijn in het weekend {vrij}. We {werken} dan meestal niet. We {gaan} dan naar familie. Of we gaan naar {buiten} met de kinderen, of met {vrienden}. We hebben ook {tijd} om boodschappen te {doen}. Of andere {leuke} dingen, bijvoorbeeld Nederlands {leren}.' },
+      { sp: 'A', text: 'Op welke {dagen} zijn de winkels open?' },
+      { sp: 'B', text: 'De {meeste} winkels zijn op maandag tot {en} met zaterdag {open} en veel winkels {ook} op zondag. Op maandagmorgen zijn veel winkels {dicht}. Mensen {die} in een winkel werken zijn dus meestal {niet} in het weekend vrij. Ze hebben op een {andere} dag vrij, bijvoorbeeld op {maandag}.' },
+      { sp: 'A', text: 'Zijn scholen in het weekend {dicht}?' },
+      { sp: 'B', text: 'Ja, {alle} scholen zijn dicht in het weekend. In het weekend hebben {kinderen} geen les. Kinderen tot {twaalf} jaar hebben meestal ook vrij op woensdagmiddag. En ze {hebben} zes weken vrij in de {zomer}! Hoe is dat in {jullie} land?' },
+    ],
+  },
+
+  {
+    id: 'les4',
+    topic: 'Les 4 — De Nederlandse les',
+    lines: [
+      { sp: 'A', text: 'Welke {talen} spreek je, Paula?' },
+      { sp: 'B', text: 'Engels, Frans en een {beetje} Nederlands. Ik {spreek} Nederlands in de les en in de {winkel}. Maar op mijn {werk} spreken we Engels.' },
+      { sp: 'A', text: 'Maar {waarom} leer je dan Nederlands? Waarom {doe} je deze cursus?' },
+      { sp: 'B', text: 'Nederlands is {belangrijk}. Ik {wil} hier studeren en {werken}.' },
+      { sp: 'A', text: 'Is Nederlands een {moeilijke} taal?' },
+      { sp: 'B', text: 'Nee, Nederlands is {niet} moeilijk. Het is een {makkelijke} taal. En de docent {spreekt} langzaam en {duidelijk}. Alle talen zijn {makkelijk}. Mijn dochter is zes jaar en {spreekt} al goed Nederlands.' },
+      { sp: 'A', text: 'En hoe {leer} jij Nederlands?' },
+      { sp: 'B', text: 'Ik {luister} goed naar de {teksten} van het Groene Boek.' },
+      { sp: 'A', text: 'Wanneer {heb} je les? Hoeveel {keer} per week?' },
+      { sp: 'B', text: 'Ik heb {vier} keer per week les: elke dag {behalve} vrijdag.' },
+      { sp: 'A', text: 'Dat is {veel}! Wat is je rooster?' },
+      { sp: 'B', text: 'Ik {zit} in groep A. Groep A {begint} \u2019s ochtends om {negen} uur, en \u2019s middags om {één} uur. Elke les {duurt} één uur. \u2019s Ochtends hebben we les van negen tot {tien} uur, en \u2019s middags van één tot twee uur. Wij {hebben} les in B25.' },
+      { sp: 'A', text: 'En wat {doen} jullie na de lessen en \u2019s avonds?' },
+      { sp: 'B', text: 'Leren, {leren}, leren! We {leren} dan de teksten voor de {volgende} dag. We hebben twee teksten {per} dag, soms drie.' },
+      { sp: 'A', text: 'En in het {weekend}?' },
+      { sp: 'B', text: 'In het weekend hebben we {geen} les. We {leren} dan voor maandag. Iedereen heeft dan {vrij}, behalve wij!' },
+    ],
+  },
+
+  {
+    id: 'les5',
+    topic: 'Les 5 — Mijn dag',
+    lines: [
+      { sp: 'A', text: 'Nick, hoe {laat} ben je meestal wakker?' },
+      { sp: 'B', text: 'Ik ben altijd om zes uur {wakker}. Dan {eet} ik brood en {drink} ik thee.' },
+      { sp: 'A', text: 'Waarom ben je zo {vroeg} wakker? Moet je zo vroeg van {huis}?' },
+      { sp: 'B', text: 'Ik {moet} om half negen op mijn {werk} zijn. Het is een {lange} reis. Daarom {ga} ik niet met de {fiets}.' },
+      { sp: 'A', text: 'Hoe {reis} je?' },
+      { sp: 'B', text: 'Ik {ga} met de bus van kwart voor {zeven} (6.45) naar het {station}. De bus {komt} om half acht (7.30) aan {bij} het station. Dat is de officiële {tijd}. Maar de bus is niet altijd {op} tijd. Gisteren was {hij} te laat. {Toen} heb ik de trein gemist. Maar meestal {mis} ik hem niet, want hij {vertrekt} om kwart voor acht. Ik heb dus een {kwartier} op het station: vijftien {minuten}. Soms vertrekt de trein ook te {laat}. Maar meestal {komt} hij op tijd.' },
+      { sp: 'A', text: 'Wat {doe} je in die tijd op het station?' },
+      { sp: 'B', text: 'Ik {lees} bijvoorbeeld de krant of {leer} voor mijn lessen Nederlands.' },
+      { sp: 'A', text: 'Hoe laat {kom} je op je werk aan?' },
+      { sp: 'B', text: 'Ik {ben} om vijf voor half negen (8.25) op mijn werk. Ik {eet} meestal om één uur, en ik {drink} thee om vier uur.' },
+      { sp: 'A', text: 'Tot hoe {laat} werk je? Hoe laat {ga} je weer naar huis?' },
+      { sp: 'B', text: 'Dat {verschilt} van dag tot dag. Meestal {werk} ik tot half zes (17.30). Maar gisteren {werkte} ik bijvoorbeeld tot kwart over vier (16.15). Meestal {kom} ik om half acht \u2019s avonds thuis. We {eten} om acht uur. Soms {kijk} ik een half uur televisie. Daarna {doe} ik mijn huiswerk voor mijn Nederlandse les. Maar om half tien {stop} ik. De dag is dan al {bijna} afgelopen. Dus ik heb het {druk}. Jij ook?' },
+    ],
+  },
+
+  {
+    id: 'les6',
+    topic: 'Les 6 — Boodschappen doen',
+    lines: [
+      { sp: 'A', text: 'Hallo Amber. Waar {doe} jij je boodschappen?' },
+      { sp: 'B', text: 'Meestal {doe} ik in het weekend boodschappen in een {supermarkt}. Ik {koop} alles voor de {hele} week. Voor een week {heb} ik veel nodig dus ik {maak} een lijstje. Daar {staat} alles op: melk, brood, {aardappelen}, fruit... Soms {weet} ik niet waar {iets} staat in de supermarkt.' },
+      { sp: 'B', text: '(In de supermarkt) Waar {staat} de melk? O, daar {zie} ik iemand die {kan} helpen. Meneer, {mag} ik u wat vragen? Ik {zie} de melk nergens. Waar {vind} ik die?' },
+      { sp: 'C', text: 'Daar bij het brood {links} en dan {rechts}. Ik {loop} wel even met u {mee}.' },
+      { sp: 'B', text: 'Ik {geloof} dat ik alles heb. O nee, ik heb {geen} koffie meer. O kijk: twee {halen}, één betalen. Dat {doe} ik dan. Dan {heb} ik één pak koffie gratis. Als ik alles {heb}, ga ik naar de {kassa} om te betalen. De mevrouw aan de kassa {zegt}: "Goedemiddag", en "Tot ziens, fijn {weekend}!" Dat is het {hele} gesprek.' },
+      { sp: 'B', text: 'Soms {ga} ik op zaterdag naar de {markt} om groente en fruit te {kopen}.' },
+      { sp: 'A', text: 'Wat is het {verschil} tussen de markt en de supermarkt?' },
+      { sp: 'B', text: 'Op de markt zijn de {meeste} producten goedkoop. {Goedkoper} dan in de supermarkt. Dat is een {belangrijk} verschil.' },
+    ],
+  },
+
+  {
+    id: 'les7',
+    topic: 'Les 7 — Stap voor stap leren',
+    lines: [
+      { sp: 'A', text: 'Hoe {werkt} de Delftse methode? Leer je de teksten uit je {hoofd}?' },
+      { sp: 'B', text: 'Nee, je {moet} de tekst verstaan {en} begrijpen zonder hulp. Dat {kost} tijd. Daarom {leer} je de tekst in stappen. Dat {kost} meestal twee of drie uur {per} tekst. Hier zijn de vijf stappen {van} de online cursus. Ga in het {menu} naar \u2019Les\u2019. Je {begint} met stap {één}. Je {kijkt} en luistert goed naar elke zin. Aan het eind van de {zin} is een pauze. De woorden {zoek} je op. Je {weet} dan wat ze {betekenen}, en je begrijpt de zin. Spreken {ze} te snel? Versta je niet alles? {Luister} een paar keer naar elke zin. Je {zegt} ook elke zin na, en je {luistert} naar je uitspraak. Zo {leer} je de uitspraak.' },
+      { sp: 'A', text: 'Dus ik {doe} drie dingen: luisteren, {lezen} en nazeggen?' },
+      { sp: 'B', text: 'Ja, en dat {doe} je zo een paar {keer}. Bij stap twee {doe} je dat ook. Maar nu heb je geen {pauze} na de zin. En bij stap drie en vier heb je ook geen {hulp} meer van de tekst. Je {kunt} de woorden niet meer {opzoeken}.' },
+      { sp: 'A', text: 'Ik {begrijp} het. Ik leer de tekst {eerst} met hulp, daarna zonder hulp. Zo {leer} ik de woorden, zo leer ik {luisteren}. En zo {oefen} ik de uitspraak.' },
+      { sp: 'B', text: 'Bij stap vijf {krijg} je je antwoord op de vraag: {ken} ik de tekst goed? In het menu \u2019Toets\u2019 vind je een {luistertoets}. Je {resultaat} moet 80% of {meer} zijn. In het boek staat ook een {tekst} met gaten voor de {controle}. Die {lees} je hardop. Schrijf {niet} in je boek. Je moet de teksten {later} herhalen.' },
+      { sp: 'A', text: 'Wat {doe} ik met de oefening?' },
+      { sp: 'B', text: 'Die {doe} je alleen als je de tekst goed {kent}. En in het boek heb je ook nog {vragen}. Die zijn om te leren {praten}.' },
+      { sp: 'A', text: 'En wat {doen} we in de les?' },
+      { sp: 'B', text: 'Praten, veel {praten}. Zo {werkt} de Delftse Methode.' },
+    ],
+  },
+];
+
+// ========== STATE ==========
+let currentText = null;
+let isChecked = false;
+
+// ========== INIT TOPIC SELECT ==========
+const topicSelect = document.getElementById('topicSelect');
+texts.forEach(t => {
+  const opt = document.createElement('option');
+  opt.value = t.id;
+  opt.textContent = t.topic;
+  topicSelect.appendChild(opt);
+});
+
+const difficultySlider = document.getElementById('difficulty');
+const difficultyValue = document.getElementById('difficultyValue');
+difficultySlider.addEventListener('input', () => {
+  difficultyValue.textContent = difficultySlider.value;
+});
+
+// ========== PARSE TEXT INTO TOKENS ==========
+// Returns array of { type: 'fixed' | 'blankable', text }
+function tokenize(text) {
+  const tokens = [];
+  const regex = /\{([^}]+)\}|([^{]+)/g;
+  let m;
+  while ((m = regex.exec(text)) !== null) {
+    if (m[1] !== undefined) {
+      tokens.push({ type: 'blankable', text: m[1] });
+    } else {
+      tokens.push({ type: 'fixed', text: m[2] });
+    }
+  }
+  return tokens;
+}
+
+// ========== PICK DIALOGUE ==========
+function pickText(forceId) {
+  if (forceId && forceId !== 'random') {
+    return texts.find(t => t.id === forceId);
+  }
+  const pool = texts.filter(t => !currentText || t.id !== currentText.id);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+// ========== RENDER ==========
+function renderText(textObj) {
+  currentText = textObj;
+  isChecked = false;
+  document.getElementById('topicBadge').textContent = textObj.topic;
+  document.getElementById('resultBar').classList.remove('show');
+
+  const container = document.getElementById('textBlock');
+  container.innerHTML = '';
+
+  // First pass: collect ALL blankable positions across all lines
+  const allBlankables = []; // each: { lineIdx, tokenIdx, text }
+  const parsedLines = textObj.lines.map((line, lineIdx) => {
+    const tokens = tokenize(line.text);
+    tokens.forEach((tok, tokenIdx) => {
+      if (tok.type === 'blankable') {
+        allBlankables.push({ lineIdx, tokenIdx, text: tok.text });
+      }
+    });
+    return tokens;
+  });
+
+  // Pick N random blankables based on slider
+  const targetCount = Math.min(parseInt(difficultySlider.value), allBlankables.length);
+  const shuffled = allBlankables.slice().sort(() => Math.random() - 0.5);
+  const chosen = shuffled.slice(0, targetCount);
+  const chosenSet = new Set(chosen.map(c => `${c.lineIdx}_${c.tokenIdx}`));
+
+  // Render each line
+  parsedLines.forEach((tokens, lineIdx) => {
+    const lineEl = document.createElement('p');
+    lineEl.style.marginBottom = '10px';
+    const line = textObj.lines[lineIdx];
+
+    // Speaker prefix
+    if (line.sp === 'A') {
+      const prefix = document.createElement('span');
+      prefix.textContent = '> ';
+      prefix.style.color = '#1a7a3e';
+      prefix.style.fontWeight = '700';
+      lineEl.appendChild(prefix);
+    } else if (line.sp === 'B') {
+      const prefix = document.createElement('span');
+      prefix.textContent = '« ';
+      prefix.style.color = '#b85a00';
+      prefix.style.fontWeight = '700';
+      lineEl.appendChild(prefix);
+    } else if (line.sp === 'C') {
+      const prefix = document.createElement('span');
+      prefix.textContent = '» ';
+      prefix.style.color = '#1565c0';
+      prefix.style.fontWeight = '700';
+      lineEl.appendChild(prefix);
+    }
+
+    tokens.forEach((tok, tokenIdx) => {
+      const key = `${lineIdx}_${tokenIdx}`;
+      if (tok.type === 'blankable' && chosenSet.has(key)) {
+        // Render as input
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'gap-input';
+        input.autocomplete = 'off';
+        input.spellcheck = false;
+        input.dataset.answer = tok.text;
+        const len = Math.max(tok.text.length, 4);
+        input.style.width = (len * 10 + 14) + 'px';
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            const inputs = Array.from(container.querySelectorAll('.gap-input'));
+            const idx = inputs.indexOf(input);
+            if (idx < inputs.length - 1) {
+              inputs[idx + 1].focus();
+            } else {
+              checkAnswers();
+            }
+          }
+        });
+        lineEl.appendChild(input);
+      } else {
+        // Render as text (blankable but not chosen, or fixed)
+        lineEl.appendChild(document.createTextNode(tok.text));
+      }
+    });
+
+    container.appendChild(lineEl);
+  });
+
+  document.getElementById('stats').textContent = `${chosen.length} gaten in te vullen`;
+
+  const firstInput = container.querySelector('.gap-input');
+  if (firstInput) firstInput.focus();
+}
+
+// ========== CHECK ==========
+function normalize(s) {
+  return (s || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[\u2018\u2019\u201A\u201B\u2032]/g, "'")
+    .replace(/[\u201C\u201D\u201E\u201F\u2033]/g, '"')
+    .replace(/[.,!?;:'"]/g, '');
+}
+
+function checkAnswers() {
+  if (isChecked) return;
+  isChecked = true;
+
+  const inputs = document.querySelectorAll('.gap-input');
+  let correct = 0;
+  const total = inputs.length;
+
+  inputs.forEach(input => {
+    const userAnswer = normalize(input.value);
+    const correctAnswer = normalize(input.dataset.answer);
+    const ok = userAnswer && userAnswer === correctAnswer;
+
+    input.disabled = true;
+    if (ok) {
+      input.classList.add('correct');
+      correct++;
+    } else {
+      input.classList.add('incorrect');
+      const correction = document.createElement('span');
+      correction.className = 'gap-correction';
+      correction.textContent = input.dataset.answer;
+      input.after(correction);
+    }
+  });
+
+  const resultBar = document.getElementById('resultBar');
+  const scoreEl = document.getElementById('resultScore');
+  const pctEl = document.getElementById('resultPct');
+  const titleEl = document.getElementById('resultTitle');
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+  scoreEl.textContent = `${correct} / ${total}`;
+  pctEl.textContent = `${pct}%`;
+  scoreEl.classList.remove('bad', 'medium');
+  if (pct < 60) {
+    scoreEl.classList.add('bad');
+    titleEl.textContent = 'Blijf oefenen! 💪';
+  } else if (pct < 80) {
+    scoreEl.classList.add('medium');
+    titleEl.textContent = 'Goed bezig! 👍';
+  } else if (pct < 100) {
+    titleEl.textContent = 'Heel goed! 🎉';
+  } else {
+    titleEl.textContent = 'Perfect! 🏆';
+  }
+  resultBar.classList.add('show');
+  resultBar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ========== EVENTS ==========
+document.getElementById('checkBtn').addEventListener('click', checkAnswers);
+
+function newExercise() {
+  const choice = topicSelect.value;
+  const textObj = pickText(choice);
+  renderText(textObj);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('newBtn').addEventListener('click', newExercise);
+document.getElementById('newAfterBtn').addEventListener('click', newExercise);
+topicSelect.addEventListener('change', newExercise);
+
+// ========== START ==========
+renderText(pickText('random'));
+</script>
+</body>
+</html>
